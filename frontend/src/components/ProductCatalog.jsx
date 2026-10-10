@@ -4,16 +4,21 @@ import { createOrder } from '../api/orderApi';
 
 /**
  * ProductCatalog Component
- * Displays interactive product catalog with search, category filtering,
- * price filter, and order placement modal.
+ * Modeled after Amazon & Myntra sidebar filters and high-density product card grid.
  */
-function ProductCatalog() {
+function ProductCatalog({ searchQueryExt = '', selectedCategoryExt = 'All' }) {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState(['All']);
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [maxPrice, setMaxPrice] = useState(1500);
+  const [selectedCategory, setSelectedCategory] = useState(selectedCategoryExt);
+  const [searchQuery, setSearchQuery] = useState(searchQueryExt);
+  const [maxPrice, setMaxPrice] = useState(2000);
   const [loading, setLoading] = useState(true);
+
+  // Sync external search from header
+  useEffect(() => {
+    if (searchQueryExt !== undefined) setSearchQuery(searchQueryExt);
+    if (selectedCategoryExt !== undefined) setSelectedCategory(selectedCategoryExt);
+  }, [searchQueryExt, selectedCategoryExt]);
 
   // Modal State for Order Placement
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -67,33 +72,42 @@ function ProductCatalog() {
     setOrderSuccess(result);
   };
 
+  const resetFilters = () => {
+    setSelectedCategory('All');
+    setSearchQuery('');
+    setMaxPrice(2000);
+  };
+
   return (
-    <div className="catalog-container">
-      {/* Search and Filter Controls */}
-      <div className="filter-card">
-        <div className="filter-header">
-          <h2>🛍️ Featured Product Catalog</h2>
-          <span className="product-count">{products.length} Products Available</span>
+    <div className="main-storefront-layout">
+      {/* 1. Left Filter Sidebar (Amazon / Myntra Style) */}
+      <aside className="sidebar-filter-panel">
+        <div className="filter-section-title">
+          <span>Filters & Refine</span>
+          <span className="filter-reset-link" onClick={resetFilters}>Clear All</span>
         </div>
 
-        <div className="filter-controls">
-          {/* Search Input */}
-          <div className="search-box">
-            <span className="search-icon">🔍</span>
-            <input
-              type="text"
-              placeholder="Search products by title, model, or brand (e.g. Dell, Apple, Sony)..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchQuery && (
-              <button className="clear-btn" onClick={() => setSearchQuery('')}>✕</button>
-            )}
+        {/* Categories Section */}
+        <div className="filter-group">
+          <label>Category</label>
+          <div className="category-list-items">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                className={`category-item-btn ${selectedCategory === cat ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(cat)}
+              >
+                <span>{cat}</span>
+                {selectedCategory === cat && <span>✓</span>}
+              </button>
+            ))}
           </div>
+        </div>
 
-          {/* Price Range Filter */}
-          <div className="price-filter">
-            <label>Max Price Limit: <strong>${maxPrice}</strong></label>
+        {/* Price Slider Section */}
+        <div className="filter-group">
+          <label>Price Range</label>
+          <div className="price-range-box">
             <input
               type="range"
               min="50"
@@ -102,90 +116,117 @@ function ProductCatalog() {
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
             />
+            <div className="price-values-txt">
+              <span>$50</span>
+              <span>Max: <strong>${maxPrice}</strong></span>
+            </div>
           </div>
         </div>
 
-        {/* Category Pills */}
-        <div className="category-pills">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              className={`pill-btn ${selectedCategory === cat ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(cat)}
-            >
-              {cat}
+        {/* Amazon Rating Filter */}
+        <div className="filter-group">
+          <label>Customer Reviews</label>
+          <div className="category-list-items">
+            <button className="category-item-btn active">⭐ 4.0 & Up (All featured)</button>
+            <button className="category-item-btn">⭐ 3.0 & Up</button>
+          </div>
+        </div>
+
+        {/* Availability */}
+        <div className="filter-group">
+          <label>Availability</label>
+          <div className="category-list-items">
+            <button className="category-item-btn active">✔ In Stock Items Only</button>
+          </div>
+        </div>
+      </aside>
+
+      {/* 2. Main Catalog Grid (Amazon / Myntra Layout) */}
+      <div className="catalog-content-panel">
+        {/* Results Header Bar */}
+        <div className="results-header-bar">
+          <span className="results-count">
+            Showing 1–{products.length} of {products.length} results for <strong>"{selectedCategory}"</strong>
+          </span>
+
+          <select className="sort-dropdown">
+            <option>Sort by: Featured</option>
+            <option>Price: Low to High</option>
+            <option>Price: High to Low</option>
+            <option>Avg. Customer Review</option>
+          </select>
+        </div>
+
+        {/* Product Cards Grid */}
+        {loading ? (
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <p>Fetching products from Amazon catalog database...</p>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="empty-state">
+            <h3>No products found for your criteria.</h3>
+            <p>Try searching for other keywords or clearing the category filter.</p>
+            <button className="btn-primary" onClick={resetFilters} style={{ marginTop: '12px' }}>
+              Reset All Filters
             </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Product Grid */}
-      {loading ? (
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>Loading products catalog...</p>
-        </div>
-      ) : products.length === 0 ? (
-        <div className="empty-state">
-          <h3>No products match your filter criteria.</h3>
-          <p>Try resetting search keywords or expanding your budget range slider.</p>
-          <button className="btn-primary" onClick={() => { setSelectedCategory('All'); setSearchQuery(''); setMaxPrice(2000); }}>
-            Reset All Filters
-          </button>
-        </div>
-      ) : (
-        <div className="product-grid">
-          {products.map((product) => {
-            const msrp = (product.price * 1.15).toFixed(2);
-            return (
-              <div key={product.id} className="product-card">
-                <div className="card-image-wrapper">
-                  <img src={product.image_url} alt={product.name} loading="lazy" />
-                  <span className="badge-category">{product.category}</span>
-                  <span className="badge-stock">{product.stock_qty} in stock</span>
-                </div>
-
-                <div className="card-body">
-                  <div className="card-meta">
-                    <span className="brand-name">{product.brand}</span>
-                    <span className="rating">⭐ {product.rating}</span>
+          </div>
+        ) : (
+          <div className="amazon-product-grid">
+            {products.map((product) => {
+              const msrp = (product.price * 1.25).toFixed(2);
+              return (
+                <div key={product.id} className="myntra-product-card">
+                  <div className="card-img-box">
+                    <img src={product.image_url} alt={product.name} loading="lazy" />
+                    <button className="wishlist-icon-btn" title="Add to Wishlist">❤️</button>
+                    <span className="deal-badge-tag">20% OFF</span>
                   </div>
 
-                  <h3 className="product-title">{product.name}</h3>
-                  <p className="product-description">{product.description}</p>
+                  <div className="card-details-box">
+                    <span className="card-brand-title">{product.brand}</span>
+                    <h3 className="card-item-title">{product.name}</h3>
 
-                  <div className="card-footer">
-                    <div className="price-wrap">
-                      <div className="price-tag">
-                        <span className="currency">$</span>
-                        <span className="amount">{product.price.toFixed(2)}</span>
-                      </div>
-                      <span className="price-msrp">${msrp}</span>
+                    {/* Amazon Star Rating */}
+                    <div className="amazon-rating-row">
+                      <span className="stars-icon">★★★★☆</span>
+                      <span className="rating-count-txt">{product.rating} (1,240)</span>
+                    </div>
+
+                    {/* Price Block */}
+                    <div className="pricing-block-row">
+                      <span className="curr-price-txt">${product.price.toFixed(2)}</span>
+                      <span className="msrp-price-txt">${msrp}</span>
+                      <span className="discount-percentage-txt">(20% OFF)</span>
+                    </div>
+
+                    <div className="prime-delivery-tag">
+                      <span>prime</span> FREE One-Day Delivery
                     </div>
 
                     <button
-                      className="btn-buy"
+                      className="btn-add-cart-amazon"
                       onClick={() => {
                         setSelectedProduct(product);
                         setOrderSuccess(null);
                       }}
                     >
-                      Buy Now ⚡
+                      Add to Cart 🛒 / Buy Now
                     </button>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       {/* Quick Order Modal */}
       {selectedProduct && (
         <div className="modal-backdrop" onClick={() => setSelectedProduct(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>📦 Place Simulated Order</h3>
+              <h3>📦 Place Order — ShopSmart.ai</h3>
               <button className="close-modal" onClick={() => setSelectedProduct(null)}>✕</button>
             </div>
 
@@ -201,7 +242,7 @@ function ProductCatalog() {
                   <p><strong>Status:</strong> <span className="status-pill">{orderSuccess.status}</span></p>
                   <p><strong>Info:</strong> {orderSuccess.trackingInfo}</p>
                 </div>
-                <button className="btn-primary modal-done-btn" onClick={() => setSelectedProduct(null)}>
+                <button className="btn-primary modal-done-btn" onClick={() => setSelectedProduct(null)} style={{ marginTop: '16px', width: '100%' }}>
                   Close Window
                 </button>
               </div>
@@ -211,7 +252,7 @@ function ProductCatalog() {
                   <img src={selectedProduct.image_url} alt={selectedProduct.name} className="preview-img" />
                   <div>
                     <h4>{selectedProduct.name}</h4>
-                    <p className="preview-price">${selectedProduct.price.toFixed(2)}</p>
+                    <p className="preview-price" style={{ color: '#0f172a', fontWeight: '800' }}>${selectedProduct.price.toFixed(2)}</p>
                   </div>
                 </div>
 

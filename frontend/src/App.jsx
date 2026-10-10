@@ -1,114 +1,171 @@
 import React, { useState } from 'react';
 
-// Import Components
+// Import Tab Components
 import ProductCatalog from './components/ProductCatalog';
 import ShoppingAssistant from './components/ShoppingAssistant';
 import PolicyAssistant from './components/PolicyAssistant';
 import OrderTracker from './components/OrderTracker';
 
 /**
- * Main App Component for ShopSmart AI
- * Clean, bright modern e-commerce storefront with integrated AI features.
+ * Main App Container for ShopSmart AI
+ * Modeled after Amazon & Myntra e-commerce navigation, search, and store layout.
  */
 function App() {
-  // Navigation active tab state: 'catalog' | 'shopping-ai' | 'policy-rag' | 'order-tracking'
+  // Active view tab: 'catalog' | 'shopping-ai' | 'policy-rag' | 'order-tracking'
   const [activeTab, setActiveTab] = useState('catalog');
+  const [searchCategory, setSearchCategory] = useState('All');
+  const [headerSearchQuery, setHeaderSearchQuery] = useState('');
+  const [wishlistCount, setWishlistCount] = useState(3);
   const [cartCount, setCartCount] = useState(2);
 
+  const handleGlobalSearch = (e) => {
+    e.preventDefault();
+    setActiveTab('catalog');
+  };
+
   return (
-    <div className="app-root">
-      {/* Top Announcement Bar */}
-      <div className="top-announcement">
-        <span>🚀 Free Express Shipping on orders over $50</span>
-        <span className="announcement-badge">NEW</span>
-        <span>✨ 24/7 AI Shopping Assistant Online</span>
-      </div>
+    <div className="amazon-myntra-storefront">
+      {/* 1. Amazon Top Dark Navy Navigation Bar */}
+      <header className="amazon-top-header">
+        {/* Brand Logo */}
+        <div className="brand-amazon-logo" onClick={() => setActiveTab('catalog')}>
+          <div className="brand-icon-box">⚡</div>
+          <div className="brand-title-group">
+            <span className="brand-name-txt">ShopSmart<span>.ai</span></span>
+            <span className="brand-sub-tag">HCLTech Hackathon</span>
+          </div>
+        </div>
 
-      <div className="app-wrapper">
-        {/* Modern E-Commerce Header Navbar */}
-        <header className="navbar">
-          <div className="brand-logo" onClick={() => setActiveTab('catalog')}>
-            <div className="brand-icon">⚡</div>
-            <div className="brand-title-wrap">
-              <h1 className="brand-text">ShopSmart AI</h1>
-              <span className="brand-tag">Intelligent E-Commerce</span>
-            </div>
+        {/* Global Amazon Search Bar */}
+        <form onSubmit={handleGlobalSearch} className="amazon-search-container">
+          <select
+            className="category-select-dropdown"
+            value={searchCategory}
+            onChange={(e) => setSearchCategory(e.target.value)}
+          >
+            <option value="All">All Categories</option>
+            <option value="Laptops">Laptops</option>
+            <option value="Phones">Phones</option>
+            <option value="Audio">Audio</option>
+            <option value="Accessories">Accessories</option>
+          </select>
+
+          <input
+            type="text"
+            className="amazon-search-input"
+            placeholder="Search Dell, MacBook, Pixel, Sony Headphones or ask AI..."
+            value={headerSearchQuery}
+            onChange={(e) => setHeaderSearchQuery(e.target.value)}
+          />
+
+          <button type="submit" className="amazon-search-btn" title="Search Products">
+            🔍
+          </button>
+        </form>
+
+        {/* Right Header Actions */}
+        <div className="header-actions-group">
+          <div className="header-action-item">
+            <span className="small-txt">Hello, Sign in</span>
+            <span className="bold-txt">Account & Lists ▾</span>
           </div>
 
-          {/* Nav Tabs */}
-          <nav className="nav-tabs">
-            <button
-              className={`nav-tab-btn ${activeTab === 'catalog' ? 'active' : ''}`}
-              onClick={() => setActiveTab('catalog')}
-            >
-              🛍️ Shop Products
-            </button>
-            
-            <button
-              className={`nav-tab-btn ${activeTab === 'shopping-ai' ? 'active' : ''}`}
-              onClick={() => setActiveTab('shopping-ai')}
-            >
-              🤖 AI Assistant
-            </button>
+          <div className="wishlist-btn-header" onClick={() => setActiveTab('catalog')}>
+            <span>❤️</span>
+            <span>Wishlist ({wishlistCount})</span>
+          </div>
 
-            <button
-              className={`nav-tab-btn ${activeTab === 'policy-rag' ? 'active' : ''}`}
-              onClick={() => setActiveTab('policy-rag')}
-            >
-              📚 Policy RAG
-            </button>
+          <div className="cart-btn-header" onClick={() => setActiveTab('order-tracking')}>
+            <span>🛒</span>
+            <span>Cart</span>
+            <span className="cart-count-badge">{cartCount}</span>
+          </div>
+        </div>
+      </header>
 
-            <button
-              className={`nav-tab-btn ${activeTab === 'order-tracking' ? 'active' : ''}`}
-              onClick={() => setActiveTab('order-tracking')}
-            >
-              📦 Track Order
-            </button>
-          </nav>
+      {/* 2. Amazon Sub-Header Category Navigation Bar */}
+      <nav className="amazon-sub-navbar">
+        <button
+          className={`sub-nav-item ${activeTab === 'catalog' ? 'active' : ''}`}
+          onClick={() => setActiveTab('catalog')}
+        >
+          ☰ All Products
+        </button>
 
-          {/* Right Header Controls */}
-          <div className="nav-right-actions">
-            <div className="server-status-pill">
-              <span className="status-dot"></span>
-              <span>Backend Ready (:8080)</span>
+        <button
+          className="sub-nav-item"
+          onClick={() => setActiveTab('catalog')}
+        >
+          💻 Laptops & Computers
+        </button>
+
+        <button
+          className="sub-nav-item"
+          onClick={() => setActiveTab('catalog')}
+        >
+          📱 Mobiles & Accessories
+        </button>
+
+        <button
+          className="sub-nav-item"
+          onClick={() => setActiveTab('catalog')}
+        >
+          🎧 Audio & Headphones
+        </button>
+
+        <button
+          className={`sub-nav-item ${activeTab === 'order-tracking' ? 'active' : ''}`}
+          onClick={() => setActiveTab('order-tracking')}
+        >
+          📦 Returns & Orders
+        </button>
+
+        <button
+          className={`sub-nav-item ${activeTab === 'policy-rag' ? 'active' : ''}`}
+          onClick={() => setActiveTab('policy-rag')}
+        >
+          📜 Policy & RAG Helper
+        </button>
+
+        {/* Myntra Style AI Shopping Assistant Tab */}
+        <button
+          className="sub-nav-item ai-tab"
+          onClick={() => setActiveTab('shopping-ai')}
+        >
+          🤖 AI Shopping Assistant ✨
+        </button>
+      </nav>
+
+      {/* 3. Hero Promo Banner (Shown on Catalog View) */}
+      {activeTab === 'catalog' && (
+        <section className="hero-promo-slider">
+          <div className="promo-text-side">
+            <span className="promo-tag-pill">🔥 MYNTRA & AMAZON TECH FESTIVAL</span>
+            <h2 className="promo-title">Up To 40% OFF On AI Laptops, Smartphones & Headphones</h2>
+            <p className="promo-subtitle">
+              Get instant smart recommendations powered by Spring AI & Gemini. Free 1-Day Prime shipping on all orders.
+            </p>
+
+            <div className="promo-badges-row">
+              <span className="promo-badge-item">⚡ Free 1-Day Delivery</span>
+              <span className="promo-badge-item">🔄 14-Day Easy Returns</span>
+              <span className="promo-badge-item">🛡️ 1-Year Manufacturer Warranty</span>
             </div>
 
-            <button className="cart-icon-btn" title="View Shopping Cart" onClick={() => setActiveTab('order-tracking')}>
-              🛒
-              <span className="cart-badge-count">{cartCount}</span>
+            <button className="btn-promo-cta" onClick={() => setActiveTab('shopping-ai')}>
+              Try AI Shopping Assistant 🤖
             </button>
           </div>
-        </header>
+        </section>
+      )}
 
-        {/* Hero Banner (Shown when on Products tab) */}
-        {activeTab === 'catalog' && (
-          <section className="hero-banner">
-            <div className="hero-content">
-              <span className="hero-tag">✨ AI-Powered E-Commerce Store</span>
-              <h2 className="hero-title">Next-Gen Tech, Picked Perfectly For You</h2>
-              <p className="hero-subtitle">
-                Explore top-tier laptops, smartphones, and audio gear. Need personalized help? Our AI assistant analyzes your exact budget and workflow in real time.
-              </p>
-              <div className="hero-actions">
-                <button className="btn-hero-primary" onClick={() => setActiveTab('shopping-ai')}>
-                  Ask AI Shopping Assistant 🤖
-                </button>
-                <button className="btn-hero-secondary" onClick={() => setActiveTab('policy-rag')}>
-                  Read Store Policies 📜
-                </button>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Dynamic Main View */}
-        <main className="main-content">
-          {activeTab === 'catalog' && <ProductCatalog />}
-          {activeTab === 'shopping-ai' && <ShoppingAssistant />}
-          {activeTab === 'policy-rag' && <PolicyAssistant />}
-          {activeTab === 'order-tracking' && <OrderTracker />}
-        </main>
-      </div>
+      {/* Dynamic Main View */}
+      <main className="main-content-view">
+        {activeTab === 'catalog' && <ProductCatalog searchQueryExt={headerSearchQuery} selectedCategoryExt={searchCategory} />}
+        {activeTab === 'shopping-ai' && <ShoppingAssistant />}
+        {activeTab === 'policy-rag' && <PolicyAssistant />}
+        {activeTab === 'order-tracking' && <OrderTracker />}
+      </main>
     </div>
   );
 }
