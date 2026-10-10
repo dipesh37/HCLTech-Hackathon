@@ -7,7 +7,7 @@ spring:
 
   # ── DATABASE ──────────────────────────────────────────────────────────────
   datasource:
-    url: jdbc:postgresql://localhost:5432/shopsmart
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/shopsmart}
     username: ${DB_USERNAME:shopsmart}
     password: ${DB_PASSWORD:shopsmart}
     driver-class-name: org.postgresql.Driver
