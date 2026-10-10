@@ -21,8 +21,30 @@ public class ProductService {
     @PostConstruct
     public void initSampleData() {
         if (productRepository.count() == 0) {
-            log.info("No products found in database. Initializing 10 sample products...");
+            log.info("No products found in database. Initializing catalogue with diverse products...");
             List<Product> sampleProducts = Arrays.asList(
+                Product.builder()
+                    .name("Dell Inspiron 15")
+                    .description("15.6-inch FHD display, Intel Core i7 13th Gen, 16GB DDR5 RAM, 512GB NVMe SSD, Intel Iris Xe Graphics. Excellent for Java development, IDE compilation, and full-stack projects.")
+                    .category("Electronics")
+                    .price(899.00)
+                    .stockQuantity(24)
+                    .rating(4.7)
+                    .imageUrl("https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=600")
+                    .brand("Dell")
+                    .inStock(true)
+                    .build(),
+                Product.builder()
+                    .name("Lenovo ThinkPad E14")
+                    .description("14-inch IPS display, AMD Ryzen 7 7730U 8-core processor, 16GB RAM, 512GB SSD, legendary ThinkPad ergonomic keyboard. Perfect for programming and machine learning prototyping.")
+                    .category("Electronics")
+                    .price(749.99)
+                    .stockQuantity(18)
+                    .rating(4.8)
+                    .imageUrl("https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=600")
+                    .brand("Lenovo")
+                    .inStock(true)
+                    .build(),
                 Product.builder()
                     .name("Dell XPS 15 Laptop")
                     .description("15.6-inch OLED 3.5K display, Intel Core i7 13th Gen, 16GB RAM, 512GB SSD, NVIDIA RTX 4050.")
@@ -32,6 +54,17 @@ public class ProductService {
                     .rating(4.8)
                     .imageUrl("https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=600")
                     .brand("Dell")
+                    .inStock(true)
+                    .build(),
+                Product.builder()
+                    .name("Apple MacBook Air M3")
+                    .description("13.6-inch Liquid Retina display, Apple M3 8-core CPU / 10-core GPU, 16GB Unified Memory, 256GB SSD, silent fanless design, up to 18 hours battery life.")
+                    .category("Electronics")
+                    .price(1099.00)
+                    .stockQuantity(20)
+                    .rating(4.9)
+                    .imageUrl("https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600")
+                    .brand("Apple")
                     .inStock(true)
                     .build(),
                 Product.builder()
@@ -140,10 +173,20 @@ public class ProductService {
     }
 
     public List<Product> getAllProducts(String category) {
-        if (category != null && !category.trim().isEmpty()) {
+        if (category != null && !category.trim().isEmpty() && !"All".equalsIgnoreCase(category) && !"All Items".equalsIgnoreCase(category)) {
             return productRepository.findByCategoryIgnoreCase(category.trim());
         }
         return productRepository.findAll();
+    }
+
+    public List<Product> getProducts(String category, String query) {
+        String cat = (category != null && !category.trim().isEmpty() && !"All".equalsIgnoreCase(category) && !"All Items".equalsIgnoreCase(category)) ? category.trim() : null;
+        String q = (query != null && !query.trim().isEmpty()) ? query.trim() : null;
+
+        if (cat == null && q == null) {
+            return productRepository.findAll();
+        }
+        return productRepository.searchProducts(cat, q);
     }
 
     public Optional<Product> getProductById(Long id) {

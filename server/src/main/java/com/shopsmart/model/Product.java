@@ -48,4 +48,19 @@ public class Product {
 
     @Builder.Default
     private Boolean inStock = true;
+
+    @com.fasterxml.jackson.annotation.JsonProperty("image")
+    public String getImage() {
+        return imageUrl;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("productId")
+    public String getProductId() {
+        return id != null ? String.valueOf(id) : null;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("stockQty")
+    public Integer getStockQty() {
+        return stockQuantity;
+    }
 }

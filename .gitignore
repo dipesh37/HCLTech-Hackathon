@@ -33,3 +33,10 @@ dist/
 # Logs
 *.log
 logs/
+
+
+# Maven build output
+**/target/
+
+# IDE settings
+.vscode/

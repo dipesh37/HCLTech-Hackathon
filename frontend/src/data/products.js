@@ -1,7 +1,16 @@
 export const CATEGORIES = [
   "All",
-  "Laptops",
-  "Phones"
+  "Electronics",
+  "Fashion",
+  "Home Appliances",
+  "Books",
+  "Healthcare",
+  "Groceries",
+  "Pharmacy",
+  "Beauty",
+  "Tech",
+  "Clothes",
+  "Shoes"
 ];
 
 export const PRODUCTS = [

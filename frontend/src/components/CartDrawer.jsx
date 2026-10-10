@@ -1,34 +1,56 @@
 import React, { useState } from 'react';
-import { X, Plus, Minus, ShoppingBag, Check, ShieldCheck } from 'lucide-react';
+import { X, Minus, Plus, ShoppingBag, ShieldCheck, Check, Truck, ArrowRight } from 'lucide-react';
+import { placeOrder } from '../api/orderApi';
 
 export const CartDrawer = ({
   isOpen,
   onClose,
   cartItems,
+  customer,
   onUpdateQuantity,
   onRemoveItem,
-  onClearCart
+  onClearCart,
+  onTrackOrder
 }) => {
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [orderComplete, setOrderComplete] = useState(false);
   const [customerNote, setCustomerNote] = useState('');
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [confirmedOrder, setConfirmedOrder] = useState(null);
 
   if (!isOpen) return null;
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const total = subtotal;
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + (Number(item.price) || 0) * item.quantity,
+    0
+  );
+  const isPrimeOrPremium = customer?.membershipTier === 'PRIME' || customer?.membershipTier === 'PREMIUM';
+  const shippingFee = (isPrimeOrPremium || subtotal >= 50) ? 0 : 9.99;
+  const total = subtotal + shippingFee;
 
-  const handleSimulateCheckout = () => {
+  const handleCheckout = async () => {
+    if (cartItems.length === 0) return;
     setIsCheckingOut(true);
-    setTimeout(() => {
-      setIsCheckingOut(false);
-      setOrderComplete(true);
+    try {
+      // Create simulated order in backend PostgreSQL
+      const firstItem = cartItems[0];
+      const result = await placeOrder({
+        customerEmail: customer?.email || 'alex.dev@shopsmart.io',
+        customerName: customer?.name || 'Alex Chen',
+        productId: firstItem.id || 1,
+        quantity: firstItem.quantity || 1,
+        shippingAddress: customerNote || '42 Silicon Parkway, San Francisco, CA'
+      });
+
+      setConfirmedOrder(result);
       onClearCart();
-    }, 1000);
+    } catch (err) {
+      console.error('Checkout error:', err);
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   const handleClose = () => {
-    setOrderComplete(false);
+    setConfirmedOrder(null);
     onClose();
   };
 
@@ -41,19 +63,18 @@ export const CartDrawer = ({
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-[#FEF9F0] dark:bg-[#1A261D] border-l border-[#2C3625]/15 dark:border-[#FEF9F0]/20 shadow-2xl flex flex-col text-[#2C3625] dark:text-[#FEF9F0] transition-colors">
+        <div className="w-screen max-w-md bg-[#FEF9F0] dark:bg-[#1A261D] text-[#2C3625] dark:text-[#FEF9F0] border-l border-[#2C3625]/10 dark:border-[#FEF9F0]/15 shadow-2xl flex flex-col transition-colors">
+          
           {/* Header */}
           <div className="p-5 bg-white dark:bg-[#2C3625] border-b border-[#2C3625]/10 dark:border-[#FEF9F0]/15 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
               <ShoppingBag className="w-5 h-5 text-[#F28482]" />
-              <h2 className="font-display text-lg font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0]">
-                Your Cart
+              <h2 className="text-base font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0]">
+                Your Shopping Bag ({cartItems.reduce((acc, i) => acc + i.quantity, 0)})
               </h2>
-              <span className="text-xs bg-[#F28482] text-[#FEF9F0] px-2.5 py-0.5 rounded-full font-bold tabular-nums">
-                {cartItems.reduce((acc, i) => acc + i.quantity, 0)} items
-              </span>
             </div>
             <button
+              type="button"
               onClick={handleClose}
               className="p-1.5 rounded-full hover:bg-[#FEF9F0] dark:hover:bg-[#1A261D] text-[#2C3625]/70 dark:text-[#FEF9F0]/70 transition-colors cursor-pointer"
             >
@@ -63,23 +84,45 @@ export const CartDrawer = ({
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto p-5 space-y-4">
-            {orderComplete ? (
-              <div className="text-center py-12 space-y-4">
-                <div className="w-16 h-16 mx-auto rounded-full bg-[#84A59D]/20 border border-[#84A59D] flex items-center justify-center text-[#84A59D]">
+            {confirmedOrder ? (
+              <div className="text-center py-10 space-y-4">
+                <div className="w-16 h-16 mx-auto rounded-full bg-[#84A59D]/20 border-2 border-[#84A59D] flex items-center justify-center text-[#84A59D]">
                   <Check className="w-8 h-8" />
                 </div>
-                <h3 className="font-display text-xl font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0]">
-                  Order Confirmed!
+                <h3 className="text-xl font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0]">
+                  Order Placed Successfully!
                 </h3>
-                <p className="font-sans text-xs text-[#2C3625]/90 dark:text-[#FEF9F0]/90 max-w-xs mx-auto leading-relaxed font-normal">
-                  Thank you! Your order is being packed in sustainable packaging and dispatched with care.
+                <div className="p-3 bg-white dark:bg-[#2C3625] rounded-2xl border border-[#2C3625]/10 dark:border-[#FEF9F0]/15 inline-block">
+                  <span className="text-xs text-[#2C3625]/60 dark:text-[#FEF9F0]/60">Order Reference: </span>
+                  <span className="text-xs font-black text-[#84A59D] ml-1">
+                    {confirmedOrder.orderNumber}
+                  </span>
+                </div>
+                <p className="text-xs text-[#2C3625]/80 dark:text-[#FEF9F0]/80 max-w-xs mx-auto leading-relaxed">
+                  Your order has been recorded in the central fulfillment database. Simulated delivery events are now live!
                 </p>
-                <button
-                  onClick={handleClose}
-                  className="mt-4 px-6 py-2.5 rounded-full bg-[#F28482] hover:bg-[#E57371] text-[#FEF9F0] text-xs sm:text-sm font-semibold shadow-xs transition-colors cursor-pointer"
-                >
-                  Continue Shopping
-                </button>
+
+                <div className="pt-2 flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const num = confirmedOrder.orderNumber;
+                      handleClose();
+                      if (onTrackOrder) onTrackOrder(num);
+                    }}
+                    className="w-full py-3 rounded-full bg-[#84A59D] hover:bg-[#6c8f87] text-white text-xs font-bold shadow-xs transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Truck className="w-4 h-4" />
+                    <span>Track Shipment Live</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleClose}
+                    className="w-full py-2.5 rounded-full border border-[#2C3625]/15 dark:border-[#FEF9F0]/20 text-xs font-semibold text-[#2C3625] dark:text-[#FEF9F0] transition-colors"
+                  >
+                    Continue Shopping
+                  </button>
+                </div>
               </div>
             ) : cartItems.length === 0 ? (
               <div className="text-center py-16 space-y-3">
@@ -89,8 +132,8 @@ export const CartDrawer = ({
                 <p className="font-display text-base font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0]">
                   Your cart is empty
                 </p>
-                <p className="font-sans text-xs sm:text-sm text-[#2C3625]/85 dark:text-[#FEF9F0]/85 max-w-xs mx-auto leading-relaxed font-normal">
-                  Explore our collection of laptops and mobile phones to fill your bag.
+                <p className="text-xs text-[#2C3625]/70 dark:text-[#FEF9F0]/70 max-w-xs mx-auto leading-relaxed">
+                  Explore our tech gadgets, apparel, home appliances, and books to fill your bag.
                 </p>
               </div>
             ) : (
@@ -101,7 +144,7 @@ export const CartDrawer = ({
                     className="p-3 bg-white dark:bg-[#2C3625] rounded-2xl border border-[#2C3625]/10 dark:border-[#FEF9F0]/15 flex items-center gap-3.5"
                   >
                     <img
-                      src={item.image}
+                      src={item.image || item.imageUrl || '/images/default_product.jpg'}
                       alt={item.name}
                       className="w-16 h-16 rounded-xl object-cover border border-[#2C3625]/10 dark:border-[#FEF9F0]/15 bg-[#FEF9F0] shrink-0"
                     />
@@ -113,11 +156,12 @@ export const CartDrawer = ({
                         {item.category}
                       </p>
                       <div className="flex items-center justify-between mt-2">
-                        <span className="font-display font-bold text-xs sm:text-sm tabular-nums text-[#2C3625] dark:text-[#FEF9F0]">
-                          ${item.price.toLocaleString()}
+                        <span className="font-bold text-xs text-[#2C3625] dark:text-[#FEF9F0]">
+                          ${Number(item.price).toFixed(2)}
                         </span>
                         <div className="flex items-center gap-2 bg-[#FEF9F0] dark:bg-[#1A261D] border border-[#2C3625]/15 dark:border-[#FEF9F0]/20 rounded-full px-2 py-0.5">
                           <button
+                            type="button"
                             onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
                             className="p-0.5 text-[#2C3625]/75 dark:text-[#FEF9F0]/75 hover:text-[#F28482] cursor-pointer"
                           >
@@ -127,6 +171,7 @@ export const CartDrawer = ({
                             {item.quantity}
                           </span>
                           <button
+                            type="button"
                             onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
                             className="p-0.5 text-[#2C3625]/75 dark:text-[#FEF9F0]/75 hover:text-[#F28482] cursor-pointer"
                           >
@@ -136,6 +181,7 @@ export const CartDrawer = ({
                       </div>
                     </div>
                     <button
+                      type="button"
                       onClick={() => onRemoveItem(item.id)}
                       className="p-1 text-[#2C3625]/50 dark:text-[#FEF9F0]/50 hover:text-[#F28482] transition-colors cursor-pointer"
                       title="Remove item"
@@ -145,17 +191,17 @@ export const CartDrawer = ({
                   </div>
                 ))}
 
-                {/* Packaging note */}
+                {/* Packaging / Delivery note */}
                 <div className="pt-2">
-                  <label className="block text-xs font-semibold text-[#2C3625] dark:text-[#FEF9F0] mb-1">
-                    Order Note / Gift Tag (Optional):
+                  <label className="block text-[11px] font-semibold text-[#2C3625] dark:text-[#FEF9F0] mb-1">
+                    Delivery Instructions / Address:
                   </label>
                   <input
                     type="text"
                     value={customerNote}
                     onChange={(e) => setCustomerNote(e.target.value)}
-                    placeholder="e.g. Please leave at front porch"
-                    className="w-full text-xs p-2.5 rounded-full bg-white dark:bg-[#2C3625] border border-[#2C3625]/15 dark:border-[#FEF9F0]/20 text-[#2C3625] dark:text-[#FEF9F0] placeholder-[#2C3625]/60 dark:placeholder-[#FEF9F0]/60 focus:outline-none focus:border-[#F28482]"
+                    placeholder="e.g. 42 Silicon Parkway, San Francisco, CA"
+                    className="w-full text-xs p-2.5 rounded-full bg-white dark:bg-[#2C3625] border border-[#2C3625]/15 dark:border-[#FEF9F0]/20 text-[#2C3625] dark:text-[#FEF9F0] placeholder-[#2C3625]/45 dark:placeholder-[#FEF9F0]/45 focus:outline-none focus:border-[#F28482]"
                   />
                 </div>
               </div>
@@ -163,41 +209,44 @@ export const CartDrawer = ({
           </div>
 
           {/* Footer Checkout */}
-          {!orderComplete && cartItems.length > 0 && (
+          {!confirmedOrder && cartItems.length > 0 && (
             <div className="p-5 bg-white dark:bg-[#2C3625] border-t border-[#2C3625]/10 dark:border-[#FEF9F0]/15 space-y-3">
               <div className="space-y-1.5 text-xs text-[#2C3625]/85 dark:text-[#FEF9F0]/85 font-sans">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-semibold tabular-nums text-[#2C3625] dark:text-[#FEF9F0]">
-                    ${subtotal.toLocaleString()}
+                  <span className="font-semibold text-[#2C3625] dark:text-[#FEF9F0]">
+                    ${subtotal.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Carbon-Neutral Delivery</span>
-                  <span className="font-semibold text-[#84A59D]">Complimentary</span>
+                  <span>Shipping</span>
+                  <span className={`font-semibold ${shippingFee === 0 ? 'text-[#84A59D]' : 'text-[#2C3625] dark:text-[#FEF9F0]'}`}>
+                    {shippingFee === 0 ? 'FREE (Member Perk)' : `$${shippingFee.toFixed(2)}`}
+                  </span>
                 </div>
                 <div className="flex justify-between pt-1 border-t border-[#2C3625]/10 dark:border-[#FEF9F0]/15 text-sm font-bold text-[#2C3625] dark:text-[#FEF9F0]">
                   <span>Total</span>
-                  <span className="font-display text-[#F28482] text-base sm:text-lg tabular-nums">
-                    ${total.toLocaleString()}
+                  <span className="text-[#F28482] text-base">
+                    ${total.toFixed(2)}
                   </span>
                 </div>
               </div>
 
               <button
-                onClick={handleSimulateCheckout}
+                type="button"
+                onClick={handleCheckout}
                 disabled={isCheckingOut}
-                className="w-full py-3 rounded-full bg-[#F28482] hover:bg-[#E57371] text-[#FEF9F0] text-xs sm:text-sm font-semibold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 rounded-full bg-[#F28482] hover:bg-[#E57371] text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                <Check className="w-4 h-4 text-[#FEF9F0]" />
+                <Check className="w-4 h-4" />
                 <span>
-                  {isCheckingOut ? 'Processing Order...' : 'Checkout & Dispatch'}
+                  {isCheckingOut ? 'Orchestrating Order...' : 'Checkout & Dispatch'}
                 </span>
               </button>
 
               <div className="flex items-center justify-center gap-2 text-xs text-[#2C3625]/85 dark:text-[#FEF9F0]/85">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#84A59D]" />
-                <span>Protected by 30-Day Gentle Living Guarantee</span>
+                <span>30-Day Hassle-Free Return Guarantee</span>
               </div>
             </div>
           )}
