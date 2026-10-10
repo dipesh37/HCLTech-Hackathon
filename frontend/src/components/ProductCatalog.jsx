@@ -1,7 +1,7 @@
 import React from 'react';
 import { ProductCard } from './ProductCard';
-import { CategoryFilter } from './CategoryFilter';
-import { Coffee, Store, ShieldCheck } from 'lucide-react';
+import { NavigationTabs } from './NavigationTabs';
+import { PackageOpen } from 'lucide-react';
 
 export const ProductCatalog = ({
   products,
@@ -11,80 +11,44 @@ export const ProductCatalog = ({
   categoryCounts,
   sortBy,
   onSortChange,
-  priceFilter,
-  onPriceFilterChange,
   wishlistIds,
   onToggleWishlist,
   onAddToCart,
-  onOpenQuickView,
-  onAskShopkeeper
+  onOpenQuickView
 }) => {
   return (
     <div className="space-y-6">
-      {/* Boutique Welcome Banner */}
-      <div className="p-6 rounded-2xl bg-[#FDFBF7] border border-[#3D405B]/20 shadow-xs relative overflow-hidden">
-        <div className="relative z-10 max-w-xl">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#81B29A]/15 text-[#3D405B] text-xs font-semibold mb-3">
-            <Store className="w-3.5 h-3.5 text-[#81B29A]" />
-            <span>Curated Hardware & Atelier Essentials</span>
-          </div>
-          <h1 className="font-serif-boutique text-2xl sm:text-3xl font-bold text-[#3D405B] leading-tight">
-            Thoughtful Tools for Everyday Craft
-          </h1>
-          <p className="text-xs sm:text-sm text-[#5C5F79] mt-2 leading-relaxed">
-            Welcome to ShopSmart. We curate repairable laptops, quiet keyboards with tactile wood chassis, and vegetable-tanned leather cases designed to live with you for years.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-[#3D405B]/15 text-xs text-[#5C5F79]">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#81B29A]" />
-              <span>Full 2-Year Workshop Care</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#E07A5F]" />
-              <span>Free Carbon-Neutral Dispatch</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#81B29A]" />
-              <span>30-Day Gentle Living Trial</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Category filters, price buttons, and sorting */}
-      <CategoryFilter
+      {/* Navigation Tabs with Pill-shaped Buttons */}
+      <NavigationTabs
         categories={categories}
         selectedCategory={selectedCategory}
         onSelectCategory={onSelectCategory}
-        itemCounts={categoryCounts}
+        categoryCounts={categoryCounts}
         sortBy={sortBy}
         onSortChange={onSortChange}
-        priceFilter={priceFilter}
-        onPriceFilterChange={onPriceFilterChange}
       />
 
-      {/* Product Catalog Grid */}
+      {/* Denser Product Grid: 5-column on xl / large screens, 4-column on lg / desktops */}
       {products.length === 0 ? (
-        <div className="p-12 text-center bg-[#FDFBF7] rounded-2xl border border-[#3D405B]/20 space-y-3">
-          <p className="font-serif-boutique text-lg font-bold text-[#3D405B]">
-            No matching items on our shelves
-          </p>
-          <p className="text-xs text-[#5C5F79] max-w-sm mx-auto">
-            Try adjusting your search terms or price filter, or ask Clara at the right counter to check for workshop inventory.
+        <div className="p-16 text-center bg-white dark:bg-[#2C3625] rounded-2xl border border-[#2C3625]/10 dark:border-[#FEF9F0]/15 space-y-3">
+          <div className="w-12 h-12 mx-auto rounded-full bg-[#FEF9F0] dark:bg-[#1A261D] flex items-center justify-center text-[#F28482]">
+            <PackageOpen className="w-6 h-6" />
+          </div>
+          <h3 className="text-base font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0]">
+            No goods found in this section
+          </h3>
+          <p className="text-xs text-[#2C3625]/70 dark:text-[#FEF9F0]/70 max-w-sm mx-auto leading-relaxed">
+            Try adjusting your search query or selecting a different category from the pill tabs above.
           </p>
           <button
-            onClick={() => {
-              onSelectCategory('All Items');
-              onPriceFilterChange(null);
-            }}
-            className="mt-2 px-4 py-2 rounded-xl bg-[#E07A5F] hover:bg-[#D26A4E] text-[#FDFBF7] text-xs font-semibold shadow-xs transition-colors"
+            onClick={() => onSelectCategory('All')}
+            className="px-4 py-2 rounded-full bg-[#F28482] hover:bg-[#E57371] text-[#FEF9F0] text-xs font-semibold transition-colors"
           >
-            Show All Shelves
+            View All Categories
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {products.map((product) => (
             <ProductCard
               key={product.id}
@@ -93,7 +57,6 @@ export const ProductCatalog = ({
               onToggleWishlist={onToggleWishlist}
               onAddToCart={onAddToCart}
               onOpenQuickView={onOpenQuickView}
-              onAskShopkeeper={onAskShopkeeper}
             />
           ))}
         </div>

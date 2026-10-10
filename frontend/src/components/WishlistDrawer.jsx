@@ -16,25 +16,25 @@ export const WishlistDrawer = ({
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className="absolute inset-0 bg-[#3D405B]/40 transition-opacity"
+        className="absolute inset-0 bg-[#2C3625]/40 dark:bg-black/60 transition-opacity"
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-[#FDFBF7] border-l border-[#3D405B]/20 shadow-xl flex flex-col text-[#3D405B]">
+        <div className="w-screen max-w-md bg-[#FEF9F0] dark:bg-[#1A261D] border-l border-[#2C3625]/15 dark:border-[#FEF9F0]/20 shadow-2xl flex flex-col text-[#2C3625] dark:text-[#FEF9F0] transition-colors">
           {/* Header */}
-          <div className="p-5 bg-[#F4F1DE] border-b border-[#3D405B]/20 flex items-center justify-between">
+          <div className="p-5 bg-white dark:bg-[#2C3625] border-b border-[#2C3625]/10 dark:border-[#FEF9F0]/15 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <Heart className="w-5 h-5 fill-[#E07A5F] text-[#E07A5F]" />
-              <h2 className="font-serif-boutique text-lg font-bold text-[#3D405B]">
+              <Heart className="w-5 h-5 fill-[#F28482] text-[#F28482]" />
+              <h2 className="text-lg font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0]">
                 Saved Favorites
               </h2>
-              <span className="text-xs bg-[#81B29A] text-[#FDFBF7] px-2 py-0.5 rounded-full font-semibold">
-                {wishlistItems.length} saved
+              <span className="text-xs bg-[#84A59D] text-[#FEF9F0] px-2.5 py-0.5 rounded-full font-bold">
+                {wishlistItems.length} items
               </span>
             </div>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg hover:bg-[#FDFBF7] text-[#5C5F79] hover:text-[#3D405B] transition-colors"
+              className="p-1.5 rounded-full hover:bg-[#FEF9F0] dark:hover:bg-[#1A261D] text-[#2C3625]/70 dark:text-[#FEF9F0]/70 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -44,33 +44,35 @@ export const WishlistDrawer = ({
           <div className="flex-1 overflow-y-auto p-5 space-y-3">
             {wishlistItems.length === 0 ? (
               <div className="text-center py-16 space-y-3">
-                <div className="w-14 h-14 mx-auto rounded-full bg-[#F4F1DE] border border-[#3D405B]/20 flex items-center justify-center text-[#5C5F79]">
-                  <Heart className="w-6 h-6 text-[#E07A5F]" />
+                <div className="w-14 h-14 mx-auto rounded-full bg-white dark:bg-[#2C3625] border border-[#2C3625]/10 dark:border-[#FEF9F0]/20 flex items-center justify-center text-[#F28482]">
+                  <Heart className="w-6 h-6" />
                 </div>
-                <p className="font-serif-boutique text-base font-bold text-[#3D405B]">
+                <p className="text-base font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0]">
                   No saved items yet
                 </p>
-                <p className="text-xs text-[#5C5F79] max-w-xs mx-auto">
-                  Click the heart icon on any laptop or craft instrument to save it for your next visit.
+                <p className="text-xs text-[#2C3625]/70 dark:text-[#FEF9F0]/70 max-w-xs mx-auto leading-relaxed">
+                  Click the heart icon on any product to save it here for later.
                 </p>
               </div>
             ) : (
               wishlistItems.map((item) => (
                 <div
                   key={item.id}
-                  className="p-3.5 bg-[#F4F1DE] rounded-xl border border-[#3D405B]/15 flex items-center gap-3.5"
+                  className="p-3.5 bg-white dark:bg-[#2C3625] rounded-2xl border border-[#2C3625]/10 dark:border-[#FEF9F0]/15 flex items-center gap-3.5"
                 >
                   <img
                     src={item.image}
                     alt={item.name}
-                    className="w-16 h-16 rounded-lg object-cover border border-[#3D405B]/15 bg-[#FDFBF7] shrink-0"
+                    className="w-16 h-16 rounded-xl object-cover border border-[#2C3625]/10 dark:border-[#FEF9F0]/15 bg-[#FEF9F0] shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-serif-boutique text-xs font-bold text-[#3D405B] truncate">
+                    <h4 className="text-xs font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0] truncate">
                       {item.name}
                     </h4>
-                    <p className="text-[11px] text-[#5C5F79]">{item.category}</p>
-                    <span className="font-bold text-xs text-[#E07A5F] block mt-1">
+                    <p className="text-[11px] text-[#84A59D] uppercase tracking-wide font-medium">
+                      {item.category}
+                    </p>
+                    <span className="font-bold text-xs text-[#2C3625] dark:text-[#FEF9F0] block mt-1">
                       ${item.price.toLocaleString()}
                     </span>
                     <div className="flex items-center gap-2 mt-2">
@@ -79,25 +81,25 @@ export const WishlistDrawer = ({
                           onAddToCart(item);
                           onRemoveWishlist(item.id);
                         }}
-                        className="px-2.5 py-1 rounded bg-[#E07A5F] hover:bg-[#D26A4E] text-[#FDFBF7] text-[11px] font-medium flex items-center gap-1 shadow-xs"
+                        className="px-3 py-1 rounded-full bg-[#F28482] hover:bg-[#E57371] text-[#FEF9F0] text-[11px] font-semibold flex items-center gap-1 shadow-xs"
                       >
-                        <ShoppingBag className="w-3 h-3 text-[#FDFBF7]" />
-                        <span>Move to Tote</span>
+                        <ShoppingBag className="w-3 h-3 text-[#FEF9F0]" />
+                        <span>Move to Cart</span>
                       </button>
                       <button
                         onClick={() => {
                           onOpenQuickView(item);
                           onClose();
                         }}
-                        className="text-[11px] text-[#5C5F79] hover:text-[#3D405B] underline"
+                        className="text-[11px] text-[#2C3625]/70 dark:text-[#FEF9F0]/70 hover:text-[#F28482] underline"
                       >
-                        Specs
+                        Details
                       </button>
                     </div>
                   </div>
                   <button
                     onClick={() => onRemoveWishlist(item.id)}
-                    className="p-1.5 text-[#7E8199] hover:text-[#E07A5F] transition-colors"
+                    className="p-1.5 text-[#2C3625]/40 dark:text-[#FEF9F0]/40 hover:text-[#F28482] transition-colors"
                     title="Remove from saved"
                   >
                     <Trash2 className="w-4 h-4" />
