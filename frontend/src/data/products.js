@@ -1,5 +1,11 @@
 export const CATEGORIES = [
   "All",
+  "Electronics",
+  "Fashion",
+  "Home Appliances",
+  "Books",
+  "Healthcare",
+  "Groceries",
   "Pharmacy",
   "Beauty",
   "Tech",

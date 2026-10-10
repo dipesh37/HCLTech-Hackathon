@@ -8,10 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/ai")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class AiController {
@@ -22,9 +23,9 @@ public class AiController {
 
     /**
      * POST /api/ai/shopping-assistant
-     * Recommends products based on user query and budget
+     * Module 1: Recommends products based on user query and budget
      */
-    @PostMapping("/shopping-assistant")
+    @PostMapping("/ai/shopping-assistant")
     public ResponseEntity<ApiResponse<ShoppingResponse>> getRecommendations(
             @Valid @RequestBody ShoppingRequest request) {
         ShoppingResponse response = shoppingAssistantService.getRecommendations(request.getQuery());
@@ -33,9 +34,9 @@ public class AiController {
 
     /**
      * POST /api/ai/policy-assistant
-     * RAG Policy Assistant that answers questions using PgVector similarity search
+     * Module 2: RAG Policy Assistant that answers questions using PgVector similarity search
      */
-    @PostMapping("/policy-assistant")
+    @PostMapping("/ai/policy-assistant")
     public ResponseEntity<ApiResponse<PolicyResponse>> answerPolicyQuestion(
             @Valid @RequestBody PolicyRequest request) {
         PolicyResponse response = knowledgeAssistantService.answerQuestion(request.getQuestion());
@@ -46,7 +47,7 @@ public class AiController {
      * POST /api/ai/documents/ingest
      * Ingests a policy PDF into the vector store
      */
-    @PostMapping("/documents/ingest")
+    @PostMapping("/ai/documents/ingest")
     public ResponseEntity<ApiResponse<Map<String, Object>>> ingestDocument(
             @RequestParam("file") MultipartFile file,
             @RequestParam("documentName") String documentName,
@@ -63,5 +64,46 @@ public class AiController {
             return ResponseEntity.internalServerError()
                 .body(ApiResponse.error("Failed to ingest document: " + e.getMessage()));
         }
+    }
+
+    /**
+     * POST /api/documents/ingest-text
+     * Ingests text/markdown policy directly into the vector store
+     */
+    @PostMapping("/documents/ingest-text")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> ingestTextDocument(
+            @RequestBody Map<String, String> payload) {
+        String title = payload.getOrDefault("title", "Custom Policy");
+        String section = payload.getOrDefault("section", "General");
+        String version = payload.getOrDefault("version", "2026.1");
+        String content = payload.getOrDefault("content", "");
+
+        if (content.isBlank()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Content cannot be empty"));
+        }
+
+        int chunks = documentIngestionService.ingestText(content, title, section, version);
+        return ResponseEntity.ok(ApiResponse.ok(Map.of(
+            "documentName", title,
+            "section", section,
+            "chunksCreated", chunks,
+            "status", "SUCCESS"
+        )));
+    }
+
+    /**
+     * GET /api/documents
+     * Lists enterprise knowledge documents
+     */
+    @GetMapping("/documents")
+    public ResponseEntity<ApiResponse<List<Map<String, String>>>> listDocuments() {
+        List<Map<String, String>> docs = List.of(
+            Map.of("title", "Return Policy", "category", "Returns & Refunds", "version", "2026.1", "effectiveDate", "Jan 2026", "region", "Global"),
+            Map.of("title", "Refund Policy", "category", "Billing & SLA", "version", "2026.1", "effectiveDate", "Jan 2026", "region", "Global"),
+            Map.of("title", "Shipping Policy", "category", "Fulfillment & Logistics", "version", "2026.1", "effectiveDate", "Jan 2026", "region", "Global"),
+            Map.of("title", "Warranty Policy", "category", "Hardware Protection", "version", "2026.1", "effectiveDate", "Jan 2026", "region", "Global"),
+            Map.of("title", "Membership Benefits", "category", "Customer Loyalty", "version", "2026.1", "effectiveDate", "Jan 2026", "region", "Global")
+        );
+        return ResponseEntity.ok(ApiResponse.ok(docs));
     }
 }

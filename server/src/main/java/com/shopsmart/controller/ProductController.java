@@ -13,18 +13,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // CrossOrigin allows frontend calls during hackathon development
+@CrossOrigin(origins = "*")
 public class ProductController {
 
     private final ProductService productService;
 
     /**
      * GET /api/products
-     * Optional filter by category: /api/products?category=Electronics
+     * Filter by category: /api/products?category=Electronics
+     * Search by keyword: /api/products?q=laptop
+     * Or both combined: /api/products?category=Electronics&q=laptop
      */
     @GetMapping
-    public ResponseEntity<List<Product>> getProducts(@RequestParam(required = false) String category) {
-        List<Product> products = productService.getAllProducts(category);
+    public ResponseEntity<List<Product>> getProducts(
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String query) {
+        String searchTerm = (q != null && !q.isBlank()) ? q : query;
+        List<Product> products = productService.getProducts(category, searchTerm);
         return ResponseEntity.ok(products);
     }
 
@@ -53,8 +59,11 @@ public class ProductController {
      * Search products by keyword across name and description
      */
     @GetMapping("/search")
-    public ResponseEntity<List<Product>> searchProducts(@RequestParam String query) {
-        return ResponseEntity.ok(productService.searchProducts(query));
+    public ResponseEntity<List<Product>> searchProducts(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String q) {
+        String term = (query != null && !query.isBlank()) ? query : q;
+        return ResponseEntity.ok(productService.searchProducts(term));
     }
 
     /**
