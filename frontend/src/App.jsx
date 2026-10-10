@@ -8,161 +8,124 @@ import OrderTracker from './components/OrderTracker';
 
 /**
  * Main App Container for ShopSmart AI
- * Modeled after Amazon & Myntra e-commerce navigation, search, and store layout.
+ * Futuristic Neo-Bento AI Storefront with embedded command bar & interactive glass UI.
  */
 function App() {
-  // Active view tab: 'catalog' | 'shopping-ai' | 'policy-rag' | 'order-tracking'
   const [activeTab, setActiveTab] = useState('catalog');
-  const [searchCategory, setSearchCategory] = useState('All');
-  const [headerSearchQuery, setHeaderSearchQuery] = useState('');
-  const [wishlistCount, setWishlistCount] = useState(3);
+  const [heroPrompt, setHeroPrompt] = useState('');
   const [cartCount, setCartCount] = useState(2);
 
-  const handleGlobalSearch = (e) => {
+  const handleHeroCommandSubmit = (e) => {
     e.preventDefault();
-    setActiveTab('catalog');
+    if (!heroPrompt.trim()) return;
+    setActiveTab('shopping-ai');
   };
 
   return (
-    <div className="amazon-myntra-storefront">
-      {/* 1. Amazon Top Dark Navy Navigation Bar */}
-      <header className="amazon-top-header">
-        {/* Brand Logo */}
-        <div className="brand-amazon-logo" onClick={() => setActiveTab('catalog')}>
-          <div className="brand-icon-box">⚡</div>
-          <div className="brand-title-group">
-            <span className="brand-name-txt">ShopSmart<span>.ai</span></span>
-            <span className="brand-sub-tag">HCLTech Hackathon</span>
-          </div>
+    <div className="neo-app-wrapper">
+      {/* 1. Floating Glass Pill Navbar */}
+      <header className="neo-navbar">
+        <div className="neo-brand" onClick={() => setActiveTab('catalog')}>
+          <div className="neo-brand-icon">⚡</div>
+          <span className="neo-brand-text">ShopSmart AI</span>
         </div>
 
-        {/* Global Amazon Search Bar */}
-        <form onSubmit={handleGlobalSearch} className="amazon-search-container">
-          <select
-            className="category-select-dropdown"
-            value={searchCategory}
-            onChange={(e) => setSearchCategory(e.target.value)}
+        <nav className="neo-nav-pills">
+          <button
+            className={`neo-tab-btn ${activeTab === 'catalog' ? 'active' : ''}`}
+            onClick={() => setActiveTab('catalog')}
           >
-            <option value="All">All Categories</option>
-            <option value="Laptops">Laptops</option>
-            <option value="Phones">Phones</option>
-            <option value="Audio">Audio</option>
-            <option value="Accessories">Accessories</option>
-          </select>
-
-          <input
-            type="text"
-            className="amazon-search-input"
-            placeholder="Search Dell, MacBook, Pixel, Sony Headphones or ask AI..."
-            value={headerSearchQuery}
-            onChange={(e) => setHeaderSearchQuery(e.target.value)}
-          />
-
-          <button type="submit" className="amazon-search-btn" title="Search Products">
-            🔍
+            🛍️ Products Store
           </button>
-        </form>
 
-        {/* Right Header Actions */}
-        <div className="header-actions-group">
-          <div className="header-action-item">
-            <span className="small-txt">Hello, Sign in</span>
-            <span className="bold-txt">Account & Lists ▾</span>
+          <button
+            className={`neo-tab-btn ${activeTab === 'shopping-ai' ? 'active' : ''}`}
+            onClick={() => setActiveTab('shopping-ai')}
+          >
+            🤖 AI Co-Pilot
+          </button>
+
+          <button
+            className={`neo-tab-btn ${activeTab === 'policy-rag' ? 'active' : ''}`}
+            onClick={() => setActiveTab('policy-rag')}
+          >
+            📚 RAG Policies
+          </button>
+
+          <button
+            className={`neo-tab-btn ${activeTab === 'order-tracking' ? 'active' : ''}`}
+            onClick={() => setActiveTab('order-tracking')}
+          >
+            📦 Track Shipment
+          </button>
+        </nav>
+
+        <div className="neo-nav-actions">
+          <div className="neo-status-badge">
+            <span className="neo-dot-pulse"></span>
+            <span>Backend Online (:8080)</span>
           </div>
 
-          <div className="wishlist-btn-header" onClick={() => setActiveTab('catalog')}>
-            <span>❤️</span>
-            <span>Wishlist ({wishlistCount})</span>
-          </div>
-
-          <div className="cart-btn-header" onClick={() => setActiveTab('order-tracking')}>
-            <span>🛒</span>
-            <span>Cart</span>
-            <span className="cart-count-badge">{cartCount}</span>
+          <div className="neo-cart-pill" onClick={() => setActiveTab('order-tracking')}>
+            <span>🛒 Cart</span>
+            <span className="neo-cart-badge">{cartCount}</span>
           </div>
         </div>
       </header>
 
-      {/* 2. Amazon Sub-Header Category Navigation Bar */}
-      <nav className="amazon-sub-navbar">
-        <button
-          className={`sub-nav-item ${activeTab === 'catalog' ? 'active' : ''}`}
-          onClick={() => setActiveTab('catalog')}
-        >
-          ☰ All Products
-        </button>
-
-        <button
-          className="sub-nav-item"
-          onClick={() => setActiveTab('catalog')}
-        >
-          💻 Laptops & Computers
-        </button>
-
-        <button
-          className="sub-nav-item"
-          onClick={() => setActiveTab('catalog')}
-        >
-          📱 Mobiles & Accessories
-        </button>
-
-        <button
-          className="sub-nav-item"
-          onClick={() => setActiveTab('catalog')}
-        >
-          🎧 Audio & Headphones
-        </button>
-
-        <button
-          className={`sub-nav-item ${activeTab === 'order-tracking' ? 'active' : ''}`}
-          onClick={() => setActiveTab('order-tracking')}
-        >
-          📦 Returns & Orders
-        </button>
-
-        <button
-          className={`sub-nav-item ${activeTab === 'policy-rag' ? 'active' : ''}`}
-          onClick={() => setActiveTab('policy-rag')}
-        >
-          📜 Policy & RAG Helper
-        </button>
-
-        {/* Myntra Style AI Shopping Assistant Tab */}
-        <button
-          className="sub-nav-item ai-tab"
-          onClick={() => setActiveTab('shopping-ai')}
-        >
-          🤖 AI Shopping Assistant ✨
-        </button>
-      </nav>
-
-      {/* 3. Hero Promo Banner (Shown on Catalog View) */}
+      {/* 2. Hero Bento AI Command Section (Shown on Store View) */}
       {activeTab === 'catalog' && (
-        <section className="hero-promo-slider">
-          <div className="promo-text-side">
-            <span className="promo-tag-pill">🔥 MYNTRA & AMAZON TECH FESTIVAL</span>
-            <h2 className="promo-title">Up To 40% OFF On AI Laptops, Smartphones & Headphones</h2>
-            <p className="promo-subtitle">
-              Get instant smart recommendations powered by Spring AI & Gemini. Free 1-Day Prime shipping on all orders.
-            </p>
-
-            <div className="promo-badges-row">
-              <span className="promo-badge-item">⚡ Free 1-Day Delivery</span>
-              <span className="promo-badge-item">🔄 14-Day Easy Returns</span>
-              <span className="promo-badge-item">🛡️ 1-Year Manufacturer Warranty</span>
+        <section className="neo-hero-bento">
+          {/* Main Hero Tile */}
+          <div className="bento-hero-tile">
+            <div>
+              <div className="hero-pill-badge">✨ Next-Gen AI Shopping Engine</div>
+              <h1 className="hero-heading">Shop Smarter with Real-Time AI Recommendations</h1>
+              <p className="hero-subtitle">
+                Type what you need in plain English below or browse our curated tech catalog.
+              </p>
             </div>
 
-            <button className="btn-promo-cta" onClick={() => setActiveTab('shopping-ai')}>
-              Try AI Shopping Assistant 🤖
-            </button>
+            {/* Embedded AI Command Bar */}
+            <form onSubmit={handleHeroCommandSubmit} className="hero-ai-command-bar">
+              <input
+                type="text"
+                placeholder="e.g. Find me a laptop under $1000 for Java development & AI..."
+                value={heroPrompt}
+                onChange={(e) => setHeroPrompt(e.target.value)}
+              />
+              <button type="submit" className="btn-command-ask">
+                Ask AI Co-Pilot ⚡
+              </button>
+            </form>
+          </div>
+
+          {/* Side Bento Stats Tile */}
+          <div className="bento-side-tile">
+            <div className="side-tile-title">⚡ AI Studio Metrics</div>
+
+            <div className="bento-stat-item">
+              <span className="stat-label">Supported Models</span>
+              <span className="stat-value">Gemini & Spring AI</span>
+            </div>
+
+            <div className="bento-stat-item">
+              <span className="stat-label">Vector Search</span>
+              <span className="stat-value">PgVector RAG</span>
+            </div>
+
+            <div className="bento-stat-item">
+              <span className="stat-label">Delivery Guarantee</span>
+              <span className="stat-value">1-Day Express</span>
+            </div>
           </div>
         </section>
       )}
 
       {/* Dynamic Main View */}
-      <main className="main-content-view">
-        {activeTab === 'catalog' && <ProductCatalog searchQueryExt={headerSearchQuery} selectedCategoryExt={searchCategory} />}
-        {activeTab === 'shopping-ai' && <ShoppingAssistant />}
+      <main className="neo-main-content">
+        {activeTab === 'catalog' && <ProductCatalog heroSearchQuery={heroPrompt} />}
+        {activeTab === 'shopping-ai' && <ShoppingAssistant initialPrompt={heroPrompt} />}
         {activeTab === 'policy-rag' && <PolicyAssistant />}
         {activeTab === 'order-tracking' && <OrderTracker />}
       </main>
