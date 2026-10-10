@@ -13,8 +13,7 @@ export const ProductCatalog = ({
   onSortChange,
   wishlistIds,
   onToggleWishlist,
-  onAddToCart,
-  onOpenQuickView
+  onAddToCart
 }) => {
   return (
     <div className="space-y-6">
@@ -56,7 +55,6 @@ export const ProductCatalog = ({
               isWishlisted={wishlistIds.includes(product.id)}
               onToggleWishlist={onToggleWishlist}
               onAddToCart={onAddToCart}
-              onOpenQuickView={onOpenQuickView}
             />
           ))}
         </div>

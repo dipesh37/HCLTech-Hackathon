@@ -1,14 +1,17 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
 import { Header } from './components/Header';
 import { HeroBanner } from './components/HeroBanner';
 import { ProductCatalog } from './components/ProductCatalog';
 import { CartDrawer } from './components/CartDrawer';
 import { WishlistDrawer } from './components/WishlistDrawer';
-import { ProductDetailModal } from './components/ProductDetailModal';
 import { ShopkeeperChat } from './components/ShopkeeperChat';
+import { ProductDetailPage } from './pages/ProductDetailPage';
+import { LoginPage } from './pages/LoginPage';
+import { SignupPage } from './pages/SignupPage';
 import { PRODUCTS, CATEGORIES } from './data/products';
 import { fetchProducts } from './api/productApi';
-import { ShoppingBag, Heart, MessageSquare } from 'lucide-react';
+import { ShoppingBag, Heart, Store, PackageOpen } from 'lucide-react';
 
 export default function App() {
   // Theme state: light or dark
@@ -41,11 +44,10 @@ export default function App() {
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
 
-  // Drawers & Modals
+  // Drawers state
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [quickViewProduct, setQuickViewProduct] = useState(null);
 
   // Toast feedback
   const [toast, setToast] = useState(null);
@@ -117,7 +119,7 @@ export default function App() {
     setWishlist((prev) => prev.filter((item) => item.id !== productId));
   };
 
-  // Filtering & Sorting
+  // Filtering & Sorting for Home view
   const filteredProducts = useMemo(() => {
     let result = [...allProducts];
 
@@ -167,7 +169,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#FEF9F0] dark:bg-[#1A261D] text-[#2C3625] dark:text-[#FEF9F0] flex flex-col font-sans transition-colors duration-200">
-      {/* Header: Logo on left, Pill search in center, Theme Toggle + Cart on right */}
+      {/* Header (Shared across all routes) */}
       <Header
         theme={theme}
         onToggleTheme={toggleTheme}
@@ -179,62 +181,107 @@ export default function App() {
         onSearchChange={setSearchQuery}
       />
 
-      {/* Hero Banner: Full-width, soft yellow background */}
-      <HeroBanner />
+      {/* Main Route Content */}
+      <div className="flex-1">
+        <Routes>
+          {/* Home / Product Catalogue Route */}
+          <Route
+            path="/"
+            element={
+              <>
+                <HeroBanner />
+                <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                  <ProductCatalog
+                    products={filteredProducts}
+                    categories={CATEGORIES}
+                    selectedCategory={selectedCategory}
+                    onSelectCategory={setSelectedCategory}
+                    categoryCounts={categoryCounts}
+                    sortBy={sortBy}
+                    onSortChange={setSortBy}
+                    wishlistIds={wishlistIds}
+                    onToggleWishlist={handleToggleWishlist}
+                    onAddToCart={handleAddToCart}
+                  />
+                </main>
+              </>
+            }
+          />
 
-      {/* Main Content Area: 5-column denser grid on xl, 4-column on lg */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <ProductCatalog
-          products={filteredProducts}
-          categories={CATEGORIES}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-          categoryCounts={categoryCounts}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-          wishlistIds={wishlistIds}
-          onToggleWishlist={handleToggleWishlist}
-          onAddToCart={handleAddToCart}
-          onOpenQuickView={setQuickViewProduct}
-        />
-      </main>
+          {/* Product Detail Full Page Route */}
+          <Route
+            path="/product/:id"
+            element={
+              <ProductDetailPage
+                allProducts={allProducts}
+                wishlistIds={wishlistIds}
+                onAddToCart={handleAddToCart}
+                onToggleWishlist={handleToggleWishlist}
+              />
+            }
+          />
 
-      {/* Floating Ask Shopkeeper Button */}
+          {/* Auth Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+
+          {/* Page Not Found Fallback Route */}
+          <Route
+            path="*"
+            element={
+              <main className="max-w-4xl mx-auto px-4 py-16 text-center space-y-4">
+                <div className="w-16 h-16 mx-auto rounded-full bg-white dark:bg-[#2C3625] border border-[#2C3625]/10 dark:border-[#FEF9F0]/15 flex items-center justify-center text-[#F28482]">
+                  <PackageOpen className="w-8 h-8" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0]">
+                  Page Not Found
+                </h2>
+                <p className="text-xs sm:text-sm text-[#2C3625]/70 dark:text-[#FEF9F0]/70 max-w-md mx-auto">
+                  Sorry, the page you are looking for does not exist or has been moved.
+                </p>
+                <Link
+                  to="/"
+                  className="inline-block px-5 py-2.5 rounded-full bg-[#F28482] hover:bg-[#E57371] text-[#FEF9F0] text-xs font-semibold shadow-xs transition-all"
+                >
+                  Back to Home Shop
+                </Link>
+              </main>
+            }
+          />
+        </Routes>
+      </div>
+
+      {/* Floating Shopkeeper Chat Button (FAB) */}
       <button
-        onClick={() => setIsChatOpen(true)}
-        className="fixed bottom-6 right-6 z-30 px-4 py-3 rounded-full bg-[#F28482] hover:bg-[#E57371] text-[#FEF9F0] shadow-lg flex items-center gap-2.5 transition-transform hover:scale-105 active:scale-95"
-        title="Ask Clara at the counter"
+        onClick={() => setIsChatOpen(!isChatOpen)}
+        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-[#F28482] hover:bg-[#E57371] text-white shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer"
+        title="Ask the Shopkeeper"
       >
-        <img
-          src="/images/shopkeeper_avatar.jpg"
-          alt="Clara"
-          className="w-6 h-6 rounded-full object-cover border border-white"
-        />
-        <span className="text-xs font-bold tracking-tight">Ask Shopkeeper</span>
+        <Store className="w-6 h-6" />
       </button>
 
-      {/* Footer */}
+      {/* Footer (Shared across all routes) */}
       <footer className="mt-16 bg-white dark:bg-[#2C3625] border-t border-[#2C3625]/10 dark:border-[#FEF9F0]/15 py-10 px-4 sm:px-6 lg:px-8 transition-colors">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-[#2C3625]/70 dark:text-[#FEF9F0]/70">
           <div>
             <p className="font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0] text-sm">
-              ShopSmart Curated Neighborhood Goods
+              ShopSmart Curated Tech & Mobile Devices
             </p>
             <p className="text-[11px] mt-0.5">
-              Thoughtful goods for every part of your day • Est. 2024
+              Thoughtful devices for work, life, and connection • Est. 2024
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-4 text-[11px]">
-            <span>Organic Certified</span>
+            <span>Official Warranty</span>
             <span>•</span>
             <span>100% Recyclable Packaging</span>
             <span>•</span>
-            <span>Fair Workshop Trade</span>
+            <span>30-Day Guarantee</span>
           </div>
         </div>
       </footer>
 
-      {/* Sliding Drawers & Modals */}
+      {/* Shared Drawers */}
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -250,23 +297,13 @@ export default function App() {
         wishlistItems={wishlist}
         onRemoveWishlist={handleRemoveWishlist}
         onAddToCart={handleAddToCart}
-        onOpenQuickView={setQuickViewProduct}
       />
 
-      <ProductDetailModal
-        product={quickViewProduct}
-        isOpen={!!quickViewProduct}
-        onClose={() => setQuickViewProduct(null)}
-        onAddToCart={handleAddToCart}
-        onToggleWishlist={handleToggleWishlist}
-        isWishlisted={quickViewProduct ? wishlistIds.includes(quickViewProduct.id) : false}
-      />
-
+      {/* Floating Shopkeeper Chat Window */}
       <ShopkeeperChat
         isOpen={isChatOpen}
         onClose={() => setIsChatOpen(false)}
         onAddToCart={handleAddToCart}
-        onOpenQuickView={setQuickViewProduct}
       />
 
       {/* Toast Notification */}

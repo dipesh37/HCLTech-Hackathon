@@ -9,7 +9,9 @@ export async function fetchProducts(category = null, searchQuery = '') {
 
     let url = `${API_BASE}/products`;
     const params = new URLSearchParams();
-    if (category && category !== 'All Items') params.append('category', category);
+    if (category && category !== 'All' && category !== 'All Items') {
+      params.append('category', category);
+    }
     if (searchQuery) params.append('q', searchQuery);
 
     if (params.toString()) {
@@ -22,7 +24,11 @@ export async function fetchProducts(category = null, searchQuery = '') {
     if (response.ok) {
       const data = await response.json();
       if (Array.isArray(data) && data.length > 0) {
-        return data;
+        // Map backend objects to ensure image/imageUrl compatibility
+        return data.map(p => ({
+          ...p,
+          image: p.imageUrl || p.image || '/images/laptop_showcase.jpg'
+        }));
       }
     }
   } catch {
@@ -31,7 +37,7 @@ export async function fetchProducts(category = null, searchQuery = '') {
 
   // Local filtering
   let filtered = [...PRODUCTS];
-  if (category && category !== 'All Items') {
+  if (category && category !== 'All' && category !== 'All Items') {
     filtered = filtered.filter(p => p.category.toLowerCase() === category.toLowerCase());
   }
   if (searchQuery && searchQuery.trim()) {
@@ -39,8 +45,7 @@ export async function fetchProducts(category = null, searchQuery = '') {
     filtered = filtered.filter(p =>
       p.name.toLowerCase().includes(q) ||
       p.description.toLowerCase().includes(q) ||
-      p.brand.toLowerCase().includes(q) ||
-      (p.curatorsNote && p.curatorsNote.toLowerCase().includes(q))
+      p.brand.toLowerCase().includes(q)
     );
   }
   return filtered;
@@ -55,7 +60,7 @@ export async function fetchCategories() {
     if (response.ok) {
       const data = await response.json();
       if (Array.isArray(data) && data.length > 0) {
-        return ['All Items', ...data];
+        return ['All', ...data];
       }
     }
   } catch {
@@ -63,3 +68,4 @@ export async function fetchCategories() {
   }
   return CATEGORIES;
 }
+
