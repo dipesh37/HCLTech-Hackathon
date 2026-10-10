@@ -8,8 +8,7 @@ import { askShopkeeper, askPolicyAssistant, fetchKnowledgeDocuments, ingestTextP
 export const ShopkeeperChat = ({
   isOpen,
   onClose,
-  onAddToCart,
-  onOpenQuickView
+  onAddToCart
 }) => {
   const [activeTab, setActiveTab] = useState("all"); // "all" | "shopping" | "policy" | "knowledge"
   const [inputValue, setInputValue] = useState("");

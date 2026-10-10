@@ -17,7 +17,7 @@ export const ProductCard = ({
     <article className="bg-white dark:bg-[#2C3625] rounded-2xl border border-[#2C3625]/10 dark:border-[#FEF9F0]/15 overflow-hidden flex flex-col justify-between transition-all duration-200 hover:shadow-md hover:border-[#F28482]/50 group relative">
       {/* Floating Pink "Bestseller" Tag */}
       {product.isBestseller && (
-        <div className="absolute top-3 left-3 z-20 bg-[#F28482] text-[#FEF9F0] text-[10px] font-bold tracking-wide uppercase px-2.5 py-1 rounded-full shadow-xs">
+        <div className="absolute top-3 left-3 z-20 bg-[#F28482] text-[#FEF9F0] text-xs font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-xs pointer-events-none">
           Bestseller
         </div>
       )}
@@ -69,13 +69,13 @@ export const ProductCard = ({
           loading="lazy"
         />
 
-        {/* Hover Quick View Trigger */}
+        {/* Hover Quick Details Trigger */}
         <div className="absolute inset-x-0 bottom-2 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-          <span className="px-3 py-1 rounded-full bg-white/95 dark:bg-[#2C3625]/95 border border-[#2C3625]/10 dark:border-[#FEF9F0]/20 text-[11px] font-medium text-[#2C3625] dark:text-[#FEF9F0] flex items-center gap-1 shadow-xs">
-            <Eye className="w-3 h-3" /> Quick Details
+          <span className="px-3 py-1 rounded-full bg-white/95 dark:bg-[#2C3625]/95 border border-[#2C3625]/10 dark:border-[#FEF9F0]/20 text-xs font-medium text-[#2C3625] dark:text-[#FEF9F0] flex items-center gap-1 shadow-xs">
+            <Eye className="w-3.5 h-3.5" /> Quick Details
           </span>
         </div>
-      </div>
+      </Link>
 
       {/* Details Area */}
       <div className="p-3.5 flex flex-col flex-1 justify-between gap-3">
@@ -94,7 +94,7 @@ export const ProductCard = ({
             className="text-xs font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0] line-clamp-2 leading-snug cursor-pointer hover:text-[#F28482] transition-colors"
           >
             {product.name}
-          </h3>
+          </Link>
 
           <p className="text-[11px] text-[#2C3625]/70 dark:text-[#FEF9F0]/70 line-clamp-2 mt-1 leading-relaxed">
             {product.description}
@@ -133,3 +133,4 @@ export const ProductCard = ({
     </article>
   );
 };
+

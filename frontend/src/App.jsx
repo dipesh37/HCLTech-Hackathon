@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
 import { Header } from './components/Header';
 import { HeroBanner } from './components/HeroBanner';
 import { ProductCatalog } from './components/ProductCatalog';
 import { CartDrawer } from './components/CartDrawer';
 import { WishlistDrawer } from './components/WishlistDrawer';
-import { ProductDetailModal } from './components/ProductDetailModal';
 import { ShopkeeperChat } from './components/ShopkeeperChat';
 import { OrderTrackerModal } from './components/OrderTrackerModal';
 import { ProductComparisonModal } from './components/ProductComparisonModal';
@@ -54,7 +54,7 @@ export default function App() {
   const [wishlist, setWishlist] = useState([]);
   const [compareProducts, setCompareProducts] = useState([]);
 
-  // Drawers & Modals
+  // Drawers state
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -302,7 +302,7 @@ export default function App() {
         <span className="text-xs font-bold tracking-tight">ShopSmart AI Assistant</span>
       </button>
 
-      {/* Footer */}
+      {/* Footer (Shared across all routes) */}
       <footer className="mt-16 bg-white dark:bg-[#2C3625] border-t border-[#2C3625]/10 dark:border-[#FEF9F0]/15 py-10 px-4 sm:px-6 lg:px-8 transition-colors">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 text-xs text-[#2C3625]/70 dark:text-[#FEF9F0]/70">
           <div>
@@ -323,7 +323,7 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Sliding Drawers & Modals */}
+      {/* Shared Drawers */}
       <CartDrawer
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -341,23 +341,13 @@ export default function App() {
         wishlistItems={wishlist}
         onRemoveWishlist={handleRemoveWishlist}
         onAddToCart={handleAddToCart}
-        onOpenQuickView={setQuickViewProduct}
       />
 
-      <ProductDetailModal
-        product={quickViewProduct}
-        isOpen={!!quickViewProduct}
-        onClose={() => setQuickViewProduct(null)}
-        onAddToCart={handleAddToCart}
-        onToggleWishlist={handleToggleWishlist}
-        isWishlisted={quickViewProduct ? wishlistIds.includes(quickViewProduct.id) : false}
-      />
-
+      {/* Floating Shopkeeper Chat Window */}
       <ShopkeeperChat
         isOpen={isChatOpen}
         onClose={() => setIsChatOpen(false)}
         onAddToCart={handleAddToCart}
-        onOpenQuickView={setQuickViewProduct}
       />
 
       <OrderTrackerModal

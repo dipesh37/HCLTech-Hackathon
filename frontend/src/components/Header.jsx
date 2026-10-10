@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { ShopSmartLogo } from './ShopSmartLogo';
 import { ShoppingBag, Search, Sun, Moon, Heart, Truck, Scale, User, Crown, Star } from 'lucide-react';
 
@@ -48,12 +50,12 @@ export const Header = ({
               Autonomous E-Commerce Platform
             </span>
           </div>
-        </div>
+        </Link>
 
         {/* Center: Pill-shaped Search Bar */}
         <div className="flex-1 max-w-lg mx-2 sm:mx-4">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2C3625]/50 dark:text-[#FEF9F0]/50" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2C3625]/60 dark:text-[#FEF9F0]/60" />
             <input
               type="text"
               value={searchQuery}
@@ -65,7 +67,7 @@ export const Header = ({
               <button
                 type="button"
                 onClick={() => onSearchChange('')}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-[#2C3625]/60 dark:text-[#FEF9F0]/60 hover:text-[#F28482]"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-medium text-[#2C3625]/75 dark:text-[#FEF9F0]/75 hover:text-[#F28482] cursor-pointer"
               >
                 Clear
               </button>

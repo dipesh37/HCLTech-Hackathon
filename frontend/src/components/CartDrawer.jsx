@@ -76,7 +76,7 @@ export const CartDrawer = ({
             <button
               type="button"
               onClick={handleClose}
-              className="p-1.5 rounded-full hover:bg-[#FEF9F0] dark:hover:bg-[#1A261D] text-[#2C3625]/70 dark:text-[#FEF9F0]/70 transition-colors"
+              className="p-1.5 rounded-full hover:bg-[#FEF9F0] dark:hover:bg-[#1A261D] text-[#2C3625]/70 dark:text-[#FEF9F0]/70 transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -129,7 +129,7 @@ export const CartDrawer = ({
                 <div className="w-14 h-14 mx-auto rounded-full bg-white dark:bg-[#2C3625] border border-[#2C3625]/10 dark:border-[#FEF9F0]/20 flex items-center justify-center text-[#F28482]">
                   <ShoppingBag className="w-6 h-6" />
                 </div>
-                <p className="text-base font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0]">
+                <p className="font-display text-base font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0]">
                   Your cart is empty
                 </p>
                 <p className="text-xs text-[#2C3625]/70 dark:text-[#FEF9F0]/70 max-w-xs mx-auto leading-relaxed">
@@ -149,10 +149,10 @@ export const CartDrawer = ({
                       className="w-16 h-16 rounded-xl object-cover border border-[#2C3625]/10 dark:border-[#FEF9F0]/15 bg-[#FEF9F0] shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-xs font-bold tracking-tight text-[#2C3625] dark:text-[#FEF9F0] truncate">
+                      <h4 className="font-display text-xs sm:text-sm font-semibold text-[#2C3625] dark:text-[#FEF9F0] truncate">
                         {item.name}
                       </h4>
-                      <p className="text-[11px] text-[#84A59D] uppercase tracking-wide font-medium">
+                      <p className="text-xs text-[#84A59D] uppercase tracking-wider font-semibold">
                         {item.category}
                       </p>
                       <div className="flex items-center justify-between mt-2">
@@ -163,17 +163,17 @@ export const CartDrawer = ({
                           <button
                             type="button"
                             onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                            className="p-0.5 text-[#2C3625]/70 dark:text-[#FEF9F0]/70 hover:text-[#F28482]"
+                            className="p-0.5 text-[#2C3625]/75 dark:text-[#FEF9F0]/75 hover:text-[#F28482] cursor-pointer"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
-                          <span className="text-xs font-semibold text-[#2C3625] dark:text-[#FEF9F0] w-4 text-center">
+                          <span className="text-xs font-semibold tabular-nums text-[#2C3625] dark:text-[#FEF9F0] w-4 text-center">
                             {item.quantity}
                           </span>
                           <button
                             type="button"
                             onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                            className="p-0.5 text-[#2C3625]/70 dark:text-[#FEF9F0]/70 hover:text-[#F28482]"
+                            className="p-0.5 text-[#2C3625]/75 dark:text-[#FEF9F0]/75 hover:text-[#F28482] cursor-pointer"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -183,7 +183,7 @@ export const CartDrawer = ({
                     <button
                       type="button"
                       onClick={() => onRemoveItem(item.id)}
-                      className="p-1 text-[#2C3625]/40 dark:text-[#FEF9F0]/40 hover:text-[#F28482] transition-colors"
+                      className="p-1 text-[#2C3625]/50 dark:text-[#FEF9F0]/50 hover:text-[#F28482] transition-colors cursor-pointer"
                       title="Remove item"
                     >
                       <X className="w-4 h-4" />
@@ -211,7 +211,7 @@ export const CartDrawer = ({
           {/* Footer Checkout */}
           {!confirmedOrder && cartItems.length > 0 && (
             <div className="p-5 bg-white dark:bg-[#2C3625] border-t border-[#2C3625]/10 dark:border-[#FEF9F0]/15 space-y-3">
-              <div className="space-y-1.5 text-xs text-[#2C3625]/80 dark:text-[#FEF9F0]/80">
+              <div className="space-y-1.5 text-xs text-[#2C3625]/85 dark:text-[#FEF9F0]/85 font-sans">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <span className="font-semibold text-[#2C3625] dark:text-[#FEF9F0]">
@@ -244,7 +244,7 @@ export const CartDrawer = ({
                 </span>
               </button>
 
-              <div className="flex items-center justify-center gap-2 text-[10px] text-[#2C3625]/70 dark:text-[#FEF9F0]/70">
+              <div className="flex items-center justify-center gap-2 text-xs text-[#2C3625]/85 dark:text-[#FEF9F0]/85">
                 <ShieldCheck className="w-3.5 h-3.5 text-[#84A59D]" />
                 <span>30-Day Hassle-Free Return Guarantee</span>
               </div>

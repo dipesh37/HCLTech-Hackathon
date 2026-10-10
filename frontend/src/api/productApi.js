@@ -52,8 +52,7 @@ export async function fetchProducts(category = null, searchQuery = '') {
     filtered = filtered.filter(p =>
       p.name.toLowerCase().includes(q) ||
       p.description.toLowerCase().includes(q) ||
-      p.brand.toLowerCase().includes(q) ||
-      (p.curatorsNote && p.curatorsNote.toLowerCase().includes(q))
+      p.brand.toLowerCase().includes(q)
     );
   }
   return filtered;
@@ -77,3 +76,4 @@ export async function fetchCategories() {
   }
   return CATEGORIES;
 }
+
