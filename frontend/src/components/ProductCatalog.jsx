@@ -72,8 +72,8 @@ function ProductCatalog() {
       {/* Search and Filter Controls */}
       <div className="filter-card">
         <div className="filter-header">
-          <h2>🛒 Product Catalog</h2>
-          <span className="product-count">{products.length} Items Found</span>
+          <h2>🛍️ Featured Product Catalog</h2>
+          <span className="product-count">{products.length} Products Available</span>
         </div>
 
         <div className="filter-controls">
@@ -82,7 +82,7 @@ function ProductCatalog() {
             <span className="search-icon">🔍</span>
             <input
               type="text"
-              placeholder="Search products by title or brand..."
+              placeholder="Search products by title, model, or brand (e.g. Dell, Apple, Sony)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -93,7 +93,7 @@ function ProductCatalog() {
 
           {/* Price Range Filter */}
           <div className="price-filter">
-            <label>Max Price: <strong>${maxPrice}</strong></label>
+            <label>Max Price Limit: <strong>${maxPrice}</strong></label>
             <input
               type="range"
               min="50"
@@ -127,50 +127,56 @@ function ProductCatalog() {
         </div>
       ) : products.length === 0 ? (
         <div className="empty-state">
-          <h3>No products match your filter.</h3>
-          <p>Try clearing your search query or increasing the maximum price slider.</p>
+          <h3>No products match your filter criteria.</h3>
+          <p>Try resetting search keywords or expanding your budget range slider.</p>
           <button className="btn-primary" onClick={() => { setSelectedCategory('All'); setSearchQuery(''); setMaxPrice(2000); }}>
-            Reset Filters
+            Reset All Filters
           </button>
         </div>
       ) : (
         <div className="product-grid">
-          {products.map((product) => (
-            <div key={product.id} className="product-card">
-              <div className="card-image-wrapper">
-                <img src={product.image_url} alt={product.name} loading="lazy" />
-                <span className="badge-category">{product.category}</span>
-                <span className="badge-stock">{product.stock_qty} in stock</span>
-              </div>
-
-              <div className="card-body">
-                <div className="card-meta">
-                  <span className="brand-name">{product.brand}</span>
-                  <span className="rating">⭐ {product.rating}</span>
+          {products.map((product) => {
+            const msrp = (product.price * 1.15).toFixed(2);
+            return (
+              <div key={product.id} className="product-card">
+                <div className="card-image-wrapper">
+                  <img src={product.image_url} alt={product.name} loading="lazy" />
+                  <span className="badge-category">{product.category}</span>
+                  <span className="badge-stock">{product.stock_qty} in stock</span>
                 </div>
 
-                <h3 className="product-title">{product.name}</h3>
-                <p className="product-description">{product.description}</p>
-
-                <div className="card-footer">
-                  <div className="price-tag">
-                    <span className="currency">$</span>
-                    <span className="amount">{product.price.toFixed(2)}</span>
+                <div className="card-body">
+                  <div className="card-meta">
+                    <span className="brand-name">{product.brand}</span>
+                    <span className="rating">⭐ {product.rating}</span>
                   </div>
 
-                  <button
-                    className="btn-buy"
-                    onClick={() => {
-                      setSelectedProduct(product);
-                      setOrderSuccess(null);
-                    }}
-                  >
-                    Order Now ⚡
-                  </button>
+                  <h3 className="product-title">{product.name}</h3>
+                  <p className="product-description">{product.description}</p>
+
+                  <div className="card-footer">
+                    <div className="price-wrap">
+                      <div className="price-tag">
+                        <span className="currency">$</span>
+                        <span className="amount">{product.price.toFixed(2)}</span>
+                      </div>
+                      <span className="price-msrp">${msrp}</span>
+                    </div>
+
+                    <button
+                      className="btn-buy"
+                      onClick={() => {
+                        setSelectedProduct(product);
+                        setOrderSuccess(null);
+                      }}
+                    >
+                      Buy Now ⚡
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
