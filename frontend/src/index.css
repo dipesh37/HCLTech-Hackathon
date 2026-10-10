@@ -1,1 +1,64 @@
-/* Global styles */
+@import "tailwindcss";
+
+@theme {
+  --color-warm-oat: #F4F1DE;
+  --color-espresso: #3D405B;
+  --color-terracotta: #E07A5F;
+  --color-sage: #81B29A;
+  --color-cream: #FDFBF7;
+  --color-sand: #F2CC8F;
+  --color-espresso-muted: #5C5F79;
+  --color-espresso-light: #7E8199;
+  --color-cream-hover: #F8F4EC;
+  --color-border-warm: #E6E0D0;
+}
+
+@layer base {
+  html, body {
+    background-color: #F4F1DE;
+    color: #3D405B;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+  }
+
+  /* Warm boutique scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #F4F1DE;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #D8D1BD;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #81B29A;
+  }
+}
+
+.font-serif-boutique {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Subtle warm button transition */
+.btn-terracotta {
+  background-color: #E07A5F;
+  color: #FDFBF7;
+  transition: all 0.2s ease-in-out;
+}
+.btn-terracotta:hover {
+  background-color: #D26A4E;
+}
+
+.btn-sage {
+  background-color: #81B29A;
+  color: #FDFBF7;
+  transition: all 0.2s ease-in-out;
+}
+.btn-sage:hover {
+  background-color: #6F9F88;
+}
