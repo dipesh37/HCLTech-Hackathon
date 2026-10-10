@@ -22,11 +22,6 @@ public class VectorStoreConfig {
             String dbProduct = conn.getMetaData().getDatabaseProductName();
             if ("PostgreSQL".equalsIgnoreCase(dbProduct)) {
                 log.info("Detected PostgreSQL database. Initializing PgVectorStore with 768 dimensions & HNSW index...");
-                try {
-                    jdbcTemplate.execute("DROP TABLE IF EXISTS vector_store CASCADE;");
-                } catch (Exception e) {
-                    log.warn("Notice: could not drop existing vector_store table: {}", e.getMessage());
-                }
                 return PgVectorStore.builder(jdbcTemplate, embeddingModel)
                         .dimensions(768)
                         .distanceType(PgVectorStore.PgDistanceType.COSINE_DISTANCE)
